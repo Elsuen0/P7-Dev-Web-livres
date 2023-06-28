@@ -12,7 +12,7 @@ exports.signupUser = (req, res, next) => {
 
             newUser.save()
                 .then(() => {
-                    res.status(201).json({ message: 'Utilisateur crée avec succès ' });
+                    res.status(201).json({ message: 'Utilisateur créé avec succès ' });
                 })
                 .catch((error) => {
                     res.status(400).json({ error: 'Une erreur est survenue lors de la création l\'utilisateur ' })
@@ -40,7 +40,7 @@ exports.loginUser = (req, res, next) => {
                     }
 
                     // Générer un token JWT signé contenant l'_id de l'utilisateur
-                    const token = jwt.sign({ userId: user._id }, 'votre_clé_secrète');
+                    const token = jwt.sign({ userId: user._id }, 'RANDOM_TOKEN_SECRET');
 
                     // Renvoyer l'_id de l'utilisateur et le token en réponse
                     res.json({ userId: user._id, token });
