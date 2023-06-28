@@ -6,6 +6,8 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth')
 const bookRoutes = require('./routes/books')
 
+const path = require('path');
+
 mongoose.connect('mongodb+srv://lucascapart80:KWwuTzdgRbmIVQnP@cluster0.cuuwr1l.mongodb.net/?retryWrites=true&w=majority',
     {
         useNewUrlParser: true,
@@ -28,7 +30,7 @@ app.use((req, res, next) => {
     next();
 });
 
-
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(bodyParser.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
