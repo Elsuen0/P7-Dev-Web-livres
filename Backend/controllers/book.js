@@ -32,7 +32,6 @@ exports.displayBooks = (req, res, next) => {
 
 exports.getBookById = (req, res, next) => {
     const bookId = req.params.id;
-    console.log(bookId, 'test')
     Book.findById(bookId)
         .then((book) => {
             if (!book) {
@@ -91,7 +90,7 @@ exports.ratingBook = (req, res, next) => {
     const rating = parseInt(req.body.rating); // Récupère la note depuis le corps de la requête et la convertit en entier
 
     if (isNaN(rating) || rating < 0 || rating > 5) {
-        // Vérifie si la note est invalide
+        // Vérifie si la note est valide
         return res
             .status(400)
             .json({ message: "La note doit être comprise entre 0 et 5." });
@@ -100,7 +99,7 @@ exports.ratingBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => {
             if (!book) {
-                // Vérifie si le livre n'existe pas
+                // Vérifie si le livre existe 
                 return res.status(404).json({ message: "Livre non trouvé." });
             }
 
@@ -115,7 +114,7 @@ exports.ratingBook = (req, res, next) => {
                     .json({ message: "L'utilisateur a déjà noté ce livre." });
             }
 
-            book.ratings.push({ userId, grade: rating }); // Ajoute la nouvelle note au tableau "ratings" du livre
+            book.ratings.push({ userId, grade: rating }); // Ajoute la nouvelle note au tableau "ratings" du livres
 
             const sumOfRates = book.ratings.reduce(
                 (sum, rating) => sum + rating.grade,
