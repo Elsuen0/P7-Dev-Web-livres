@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config(); // Charger les variables d'environnement
 
 exports.signupUser = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
@@ -12,10 +13,10 @@ exports.signupUser = (req, res, next) => {
 
             newUser.save()
                 .then(() => {
-                    res.status(201).json({ message: 'Utilisateur créé avec succès ' });
+                    res.status(201).json({ message: 'Utilisateur créé avec succès' });
                 })
                 .catch((error) => {
-                    res.status(400).json({ error: 'Une erreur est survenue lors de la création l\'utilisateur ' })
+                    res.status(400).json({ error: 'Une erreur est survenue lors de la création de l\'utilisateur' })
                 });
         })
         .catch((error) => {
@@ -40,13 +41,14 @@ exports.loginUser = (req, res, next) => {
                     }
 
                     // Générer un token JWT signé contenant l'_id de l'utilisateur
-                    const token = jwt.sign({ userId: user._id }, 'RANDOM_TOKEN_SECRET');
+                    const secretToken = process.env.SECRET_TOKEN; // Utiliser la variable d'environnement
+                    const token = jwt.sign({ userId: user._id }, secretToken);
 
                     // Renvoyer l'_id de l'utilisateur et le token en réponse
                     res.json({ userId: user._id, token });
                 })
                 .catch((error) => {
-                    res.status(500).json({ error: 'Une erreur est survenue lors de la vérification du mot de passe' });
+                    res.status(401).json({ error: 'Une erreur est survenue lors de la tentative de connexion' });
                 });
         })
         .catch((error) => {
