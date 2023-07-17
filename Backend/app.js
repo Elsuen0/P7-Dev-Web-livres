@@ -2,13 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();
 
 const authRoutes = require('./routes/auth')
 const bookRoutes = require('./routes/books')
-
 const path = require('path');
+const rateLimit = require('./middleware/rateLimit');
 
-mongoose.connect('mongodb+srv://lucascapart80:KWwuTzdgRbmIVQnP@cluster0.cuuwr1l.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGODB_URL,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -18,6 +19,7 @@ mongoose.connect('mongodb+srv://lucascapart80:KWwuTzdgRbmIVQnP@cluster0.cuuwr1l.
 
 const app = express();
 
+app.use(rateLimit);
 app.use(express.json());
 app.use(cors());
 
