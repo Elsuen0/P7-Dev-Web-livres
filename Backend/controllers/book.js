@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Book = require('../models/book');
 const fs = require('fs');
-const { error } = require('console');
 
 exports.addBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);

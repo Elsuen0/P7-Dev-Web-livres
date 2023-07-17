@@ -48,7 +48,7 @@ exports.loginUser = (req, res, next) => {
                     res.json({ userId: user._id, token });
                 })
                 .catch((error) => {
-                    res.status(401).json({ error: 'Une erreur est survenue lors de la tentative de connexion' });
+                    res.status(400).json({ error: 'Une erreur est survenue lors de la tentative de connexion' });
                 });
         })
         .catch((error) => {
