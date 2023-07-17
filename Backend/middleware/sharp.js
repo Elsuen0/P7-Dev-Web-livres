@@ -6,9 +6,10 @@ const convertToAvif = async (req, res, next) => {
     if (!req.file) return next();
 
     const inputFile = req.file.path;
+    const baseNamefile = path.basename(inputFile, path.extname(inputFile));
     const tempOutputFile = path.join(
         path.dirname(inputFile),
-        `${path.basename(inputFile, path.extname(inputFile))}.avif`
+        `${baseNamefile}.avif`
     );
 
     try {
@@ -21,7 +22,7 @@ const convertToAvif = async (req, res, next) => {
 
         req.file.path = tempOutputFile;
         req.file.mimetype = "image/avif";
-        req.file.filename = `${path.basename(inputFile, path.extname(inputFile))}.avif`;
+        req.file.filename = `${baseNamefile}.avif`;
     } catch (err) {
         console.error("Error while converting image:", err);
     }
