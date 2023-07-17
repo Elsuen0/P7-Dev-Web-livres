@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Book = require('../models/book');
 const fs = require('fs');
+const { error } = require('console');
 
 exports.addBook = (req, res, next) => {
     const bookObject = JSON.parse(req.body.book);
@@ -9,7 +10,9 @@ exports.addBook = (req, res, next) => {
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        rating: [],
+        averageRating: 0
     });
 
     book.save()
@@ -46,9 +49,34 @@ exports.getBookById = (req, res, next) => {
 
 
 exports.updateOne = (req, res, next) => {
-    Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Objet modifié !' }))
-        .catch(error => res.status(400).json({ error }));
+    // Créer l'objet bookObject avec les données du formulaire
+    const bookObject = req.file ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+
+    // On supprime la propriété _userId de bookObject
+    delete bookObject._userId;
+
+    // On recherche le livre à mettre à jour dans la base de données
+    Book.findOne({ _id: req.params.id })
+        .then((book) => {
+            // On récupère le nom de fichier de l'ancienne image
+            const filename = book.imageUrl.split('/images/')[1];
+
+            // On supprime l'ancienne image du système de fichiers si un nouveau fichier est fourni
+            req.file && fs.unlink(`images/${filename}`, (err => {
+                if (err) console.log(err);
+            }));
+
+            // On met à jour le livre dans la base de données avec bookObject
+            Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+                .then(() => res.status(200).json({ message: 'Objet modifié !' }))
+                .catch(error => res.status(400).json({ error }));
+        })
+        .catch((error) => {
+            res.status(404).json({ error });
+        });
 };
 
 
@@ -86,9 +114,9 @@ exports.getBestRatedBooks = (req, res, next) => {
 
 
 exports.ratingBook = (req, res, next) => {
-    const userId = req.body.userId; // Récupère l'ID de l'utilisateur depuis le corps de la requête
+    const userId = req.auth.userId; // Récupère l'ID de l'utilisateur depuis le corps de la requête
     const rating = parseInt(req.body.rating); // Récupère la note depuis le corps de la requête et la convertit en entier
-
+    console.log(userId)
     if (isNaN(rating) || rating < 0 || rating > 5) {
         // Vérifie si la note est valide
         return res
