@@ -131,7 +131,7 @@ exports.ratingBook = (req, res, next) => {
             }
 
             const existingRating = book.ratings.find(
-                (rating) => rating.userId === userId
+                (rating) => rating.userId === req.auth.userId
             ); // Vérifie s'il existe déjà une note de cet utilisateur pour ce livre
 
             if (existingRating) {
